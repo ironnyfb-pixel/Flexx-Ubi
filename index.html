@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flexx Ubi</title>
+<link rel="icon" href="img/cactus.png" type="image/png">
+
+
+<!-- FUENTE -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* RESET */
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* BODY */
+body{background:#f3f6fc;font-family:'Poppins',sans-serif}
+
+/* ===== HEADER ===== */
+header{
+  width:100%;padding:10px 0;text-align:center;font-size:32px;font-weight:800;
+  letter-spacing:5px;background:#dedfdd;color:rgb(209,7,7);
+  position:fixed;top:0;left:0;z-index:100;
+}
+.spacer{height:68px}
+
+/* ===== SLIDER FADE ===== */
+.banner-slider{
+  width:100%;
+  height:700px;
+  overflow:hidden;
+  position:relative;
+  background:black;
+  z-index:110;
+}
+
+/* fade + hover zoom: añadimos transform transition */
+.banner-slider img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition: opacity .6s ease, transform .35s cubic-bezier(.2,.9,.2,1);
+  transform-origin:center center;
+}
+
+/* imagen visible */
+.banner-slider img.active{
+  opacity:1;
+}
+
+/* hover sobre la imagen activa -> zoom leve */
+.banner-slider img.active:hover{
+  transform: scale(1.25);
+}
+
+/* si quieres zoom aunque el puntero esté sobre el contenedor (no solo sobre la imagen)
+   puedes usar: .banner-slider:hover img.active { transform: scale(1.03); } */
+
+/* flechas (se aseguran de mantener translateY) */
+.arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:26px;
+  color:#d6242c;
+  cursor:pointer;
+  padding:6px 10px;
+  border:none;
+  background:none;
+  z-index:120;
+  transition: transform .22s ease, opacity .22s ease;
+}
+
+/* hover: escala manteniendo la traducción vertical */
+.arrow:hover{
+  transform: translateY(-50%) scale(1.40);
+  opacity:.85;
+}
+
+.arrow.left{left:20px}.arrow.right{right:20px}
+
+/* zonas invisibles clicables */
+.banner-zone{position:absolute;top:0;width:50%;height:100%;cursor:pointer;z-index:115}
+.banner-zone.left{left:0}.banner-zone.right{right:0}
+
+/* ===== TITULO, CARD, FOOTER ===== */
+.section-title{text-align:center;padding-top:45px}
+.section-title img{width:55px}
+.section-title h2{margin-top:0;font-size:32px;font-weight:700;color:rgb(209,7,7)}
+.section-title .linea{width:60px;height:4px;background:#d6242c;margin:4px auto;border-radius:10px}
+
+.card-container{width:100%;max-width:900px;margin:35px auto;background:white;border-radius:15px;display:flex;padding:20px;gap:20px}
+.card-left{width:40%;text-align:center;padding-top:30px}
+.card-left img{width:90px;height:90px;border-radius:50%;object-fit:cover}
+.card-left h3{color:#d6242c;font-size:18px;margin-top:8px}
+.card-left p{font-size:14px}
+.card-right{width:60%}
+.card-right iframe{width:100%;height:210px;border-radius:12px}
+
+footer{width:100%;text-align:center;padding:12px 0;background:#f3f6fc;color:rgb(209,7,7);font-weight:bold;letter-spacing:4px}
+
+/* RESPONSIVE */
+@media(max-width:900px){.card-container{flex-direction:column;width:90%}.card-left,.card-right{width:100%}.card-right iframe{height:260px}}
+@media(max-width:520px){.card-right iframe{height:230px}}
+
+/* ===== CARRUSEL 3D ===== */
+.carousel-3d-container{
+  width:100%;
+  background:#e0e0e0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:60px 0;
+  position:relative;
+  overflow:hidden;
+}
+
+.carousel-stage{
+  width:1100px;
+  max-width:95%;
+  height:380px;
+  position:relative;
+}
+
+.carousel-stage img{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:260px;
+  height:340px;
+  object-fit:cover;
+  border-radius:18px;
+  transform:translate(-50%,-50%) scale(.6);
+  transition:transform .55s cubic-bezier(.2,.9,.2,1), opacity .45s ease, filter .45s ease;
+  box-shadow:0 12px 30px rgba(0,0,0,.25);
+  opacity:0;
+  pointer-events:auto;
+}
+
+.img-far{ opacity:.45; filter:blur(2px); }
+.img-near{ opacity:.9; filter:none; }
+.img-center{ opacity:1; filter:none; transform:translate(-50%,-50%) scale(1.6); z-index:60; box-shadow:0 26px 60px rgba(0,0,0,.55) }
+.img-hidden{ opacity:0; pointer-events:none; transform:translate(-50%,-50%) scale(.45) }
+
+.c-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  background:none;          /* sin fondo */
+  border:none;              /* sin borde */
+  padding:0;                /* sin relleno */
+  cursor:pointer;
+  z-index:80;
+  box-shadow:none;          /* sin sombra */
+  font-size:30px;           /* tamaño de flecha */
+  color:#d6242c;              /* flecha blanca */
+  opacity:.75;              /* ligera transparencia */
+  transition:transform .25s ease, opacity .25s ease;
+}
+
+.c-btn:hover{
+  transform:translateY(-50%) scale(1.15);
+  opacity:1;
+}
+
+.c-btn.left{ left:2% } .c-btn.right{ right:2% }
+
+@media(max-width:900px){
+  .carousel-stage img{ width:200px; height:260px }
+}
+</style>
+</head>
+<body>
+
+<header>BARBER + LOCATION</header>
+<div class="spacer"></div>
+
+<!-- SLIDER -->
+<div class="banner-slider">
+    <img src="img/banner.jpg" class="active" alt="">
+    <img src="img/banner1.png" alt="">
+    <img src="img/banner2.png" alt="">
+    <img src="img/banner3.png" alt="">
+
+    <div class="banner-zone left" onclick="prevSlide()"></div>
+    <div class="banner-zone right" onclick="nextSlide()"></div>
+
+    <button class="arrow left" onclick="prevSlide()">&#10094;</button>
+    <button class="arrow right" onclick="nextSlide()">&#10095;</button>
+</div>
+
+<script>
+let index = 0;
+const slides = document.querySelectorAll(".banner-slider img");
+const total = slides.length;
+
+function show(){
+    slides.forEach(i=>i.classList.remove("active"));
+    slides[index].classList.add("active");
+}
+
+function nextSlide(){
+    index = (index + 1) % total;
+    show();
+}
+
+function prevSlide(){
+    index = (index - 1 + total) % total;
+    show();
+}
+
+/* AUTOPLAY RESTAURADO */
+let autoPlay = setInterval(nextSlide, 4000);
+
+function resetAuto(){
+    clearInterval(autoPlay);
+    autoPlay = setInterval(nextSlide, 4000);
+}
+
+document.querySelector(".arrow.left").onclick = ()=>{
+    prevSlide(); resetAuto();
+};
+document.querySelector(".arrow.right").onclick = ()=>{
+    nextSlide(); resetAuto();
+};
+document.querySelector(".banner-zone.left").onclick = ()=>{
+    prevSlide(); resetAuto();
+};
+document.querySelector(".banner-zone.right").onclick = ()=>{
+    nextSlide(); resetAuto();
+};
+</script>
+
+<!-- TITULO -->
+<div class="section-title">
+  <img src="img/ubicacion.png" alt="">
+  <h2>Sede Principal</h2>
+  <div class="linea"></div>
+</div>
+
+<!-- CARD -->
+<div class="card-container">
+  <div class="card-left">
+    <img src="img/ubi.png" alt="">
+    <h3>Atención en Lima</h3>
+    <p>Barbería a domicilio</p>
+  </div>
+  <div class="card-right">
+    <iframe 
+      src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d29147.150197102084!2d-76.9705568708431!3d-12.043511974818042!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2spe!4v1764287719471!5m2!1ses-419!2spe"
+      style="border:0;" 
+      allowfullscreen 
+      loading="lazy">
+    </iframe>
+</div>
+
+</div>
+
+<!-- CARRUSEL -->
+<div class="carousel-3d-container">
+  <div class="carousel-stage" id="carouselStage">
+    <img src="img/1.jpg" alt="">
+    <img src="img/2.jpg" alt="">
+    <img src="img/3.jpg" alt="">
+    <img src="img/4.jpg" alt="">
+    <img src="img/5.jpg" alt="">
+    <img src="img/6.jpg" alt="">
+    <img src="img/7.jpg" alt="">
+  </div>
+
+  <button class="c-btn left" id="cPrev">&#10094;</button>
+  <button class="c-btn right" id="cNext">&#10095;</button>
+</div>
+
+<script>
+const stage = document.getElementById('carouselStage');
+const imgs = Array.from(stage.querySelectorAll('img'));
+
+let centerIndex = 2;
+const GAP = 120;
+const VISIBLE = 2;
+
+function wrap(i){ return (i + imgs.length) % imgs.length; }
+
+function waitImagesLoaded(cb){
+  const all = imgs.map(img => img.complete);
+  if(all.every(Boolean)){ cb(); return; }
+  let loaded = 0;
+  imgs.forEach(img => img.addEventListener('load', ()=>{
+    loaded++;
+    if(loaded >= imgs.length) cb();
+  }));
+}
+
+function placeImages(){
+  const slideW = imgs[0].offsetWidth;
+  const block = slideW + GAP;
+
+  imgs.forEach((img, idx)=>{
+    let d = idx - centerIndex;
+    const n = imgs.length;
+    while(d <= -Math.floor(n/2)) d += n;
+    while(d > Math.floor(n/2)) d -= n;
+
+    if(Math.abs(d) <= VISIBLE){
+      const offsetPx = d * block;
+      img.style.transform =
+        `translate(calc(-50% + ${offsetPx}px), -50%) scale(${d===0?1.6:(Math.abs(d)===1?1.05:0.85)})`;
+      img.style.opacity = '1';
+      img.style.pointerEvents = 'auto';
+      img.style.zIndex = (100 - Math.abs(d)).toString();
+      img.classList.remove('img-hidden','img-far','img-near','img-center');
+      if(d===0) img.classList.add('img-center');
+      else if(Math.abs(d)===1) img.classList.add('img-near');
+      else img.classList.add('img-far');
+    } else {
+      img.style.transform =
+        `translate(calc(-50% + ${d>0?2000:-2000}px), -50%) scale(.45)`;
+      img.style.opacity = '0';
+      img.style.pointerEvents = 'none';
+      img.style.zIndex = '0';
+      img.classList.remove('img-center','img-near','img-far');
+      img.classList.add('img-hidden');
+    }
+  });
+}
+
+imgs.forEach((img, idx)=>{
+  img.addEventListener('click', ()=>{
+    centerIndex = idx;
+    placeImages();
+  });
+});
+
+document.getElementById('cPrev').addEventListener('click', ()=>{
+  centerIndex = wrap(centerIndex - 1);
+  placeImages();
+});
+document.getElementById('cNext').addEventListener('click', ()=>{
+  centerIndex = wrap(centerIndex + 1);
+  placeImages();
+});
+
+waitImagesLoaded(()=>{
+  imgs.forEach(i=> i.style.transform = 'translate(-50%,-50%) scale(.6)');
+  centerIndex = centerIndex % imgs.length;
+  placeImages();
+  window.addEventListener('resize', ()=> requestAnimationFrame(placeImages));
+});
+</script>
+
+<footer>Flexx.com</footer>
+</body>
+</html>
